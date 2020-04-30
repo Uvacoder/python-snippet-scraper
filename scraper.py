@@ -4,10 +4,13 @@ import pymysql
 import threading
 import time
 
+# gLock = threading.Lock()
 # define the function that used for inserting the data into the database
 def getCaseDetails(case_year, division_code, case_id):
 
     try:  
+        # deifne the lock for the thread
+        # gLock.acquire()
 
         item = str(case_year + division_code + case_id)
     
@@ -26,7 +29,7 @@ def getCaseDetails(case_year, division_code, case_id):
         # use the parser with lxml
         bs = BeautifulSoup(html,"lxml")
 
-        # case number
+        # case number impoiert ethe lasdf
         case_number = bs.find_all('span',attrs={'id':'lblBottom'})[0].string
 
         # plaintiff
@@ -71,17 +74,24 @@ def getCaseDetails(case_year, division_code, case_id):
         conn.commit()
 
         conn.close()
-
+        # release the lock
+        # gLock.release()
+          
     except:
         
         print('this page does not exist' )
 
 # define the automated function
 def multi_thread():
-    for i in range(300,400):
+    for i in range(400,900):
         # asynchronous process:
-        task = threading.Thread(target=getCaseDetails, args=('1998','D',str(i).zfill(6)))
-        task.start()  
+        task1 = threading.Thread(target=getCaseDetails, args=('1998','D',str(i).zfill(6)))
+        task2 = threading.Thread(target=getCaseDetails, args=('1999','D',str(i).zfill(6)))
+        task1.start()  
+        task2.start() 
+
 
 # run the function to scrape the date from the task page
-multi_thread()
+if __name__ == '__main__':
+
+    multi_thread()
